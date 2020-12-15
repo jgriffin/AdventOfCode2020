@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "ParserCombinator",
+        "repositoryURL": "https://github.com/jgriffin/ParserCombinator.git",
+        "state": {
+          "branch": null,
+          "revision": "ace3f7aee2dc72772e22f5c3abf8a6841ad9f6b4",
+          "version": "0.0.1"
+        }
+      },
+      {
         "package": "swift-algorithms",
         "repositoryURL": "https://github.com/apple/swift-algorithms.git",
         "state": {

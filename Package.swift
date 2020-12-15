@@ -6,23 +6,28 @@ import PackageDescription
 let package = Package(
     name: "AdventOfCode",
     products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "AdventOfCode",
-            targets: ["AdventOfCode"]),
+            targets: ["AdventOfCode"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-algorithms.git", from: "0.0.2"),
+        .package(url: "https://github.com/jgriffin/ParserCombinator.git", from: "0.0.1"),
     ],
     targets: [
         .target(
             name: "AdventOfCode",
-            dependencies: []),
+            dependencies: ["ParserCombinator"]
+        ),
         .testTarget(
             name: "AdventOfCodeTests",
             dependencies: [
                 "AdventOfCode",
+                "ParserCombinator",
                 .product(name: "Algorithms", package: "swift-algorithms"),
             ],
-            resources: [.process("resources")]),
-    ])
+            resources: [.process("resources")]
+        ),
+    ]
+)

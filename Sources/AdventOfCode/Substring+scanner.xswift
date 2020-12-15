@@ -1,0 +1,72 @@
+//
+//  File.swift
+//
+//
+//  Created by John on 12/13/20.
+//
+
+import Foundation
+
+public enum ScanError: Error {
+    case endOfString
+    case conditionNotMet
+    case parseFailed
+}
+
+public extension Substring {
+    func peek() throws -> (ch: Element, rest: Substring) {
+        guard let ch = self.first else { throw ScanError.endOfString }
+        return (ch: ch, rest: self.dropFirst())
+    }
+
+    func peek(maxLength: Int) throws -> (prefix: Substring, rest: Substring) {
+        let p = self.prefix(maxLength) else { throw ScanError.endOfString }
+        return (prefix: p, rest: self.dropFirst(p.count))
+    }
+
+    func peek(count: Int = 1) throws -> (e: Element, rest: Substring) {
+        guard let e = self.pre else { throw ScanError.endOfString }
+        return (e: e, rest: self.dropFirst())
+    }
+
+//    func peek(_ n: Int) -> Element {
+//        assert(n > 0 && self.count >= n)
+//        return self.dropFirst(n).peek()
+//    }
+}
+
+public extension Substring {
+    func scan() throws -> (rest: Substring, ch: Character) {
+        guard let ch = first else { throw ScanError.endOfString }
+        return (dropFirst(), ch)
+    }
+
+    func scan(count: Int) throws -> (rest: Substring, prefix: Substring) {
+        return (dropFirst(count), prefix(count))
+    }
+
+    func scan<C>(prefix: C) throws -> (rest: Substring, prefix: Substring) where C: Collection, C.Element == Character {
+        guard starts(with: prefix) else { throw ScanError.conditionNotMet }
+        return (rest: dropFirst(prefix.count), prefix: Substring(prefix))
+    }
+
+    func scan(if condition: (Element) -> Bool) throws -> (rest: Substring, e: Element) {
+        guard let f = first, condition(f) else { throw ScanError.conditionNotMet }
+        return (dropFirst(), f)
+    }
+
+    func scan(while condition: (Element) -> Bool) throws -> (rest: Substring, prefix: Substring) {
+        let p = prefix(while: condition)
+        return (dropFirst(p.count), p)
+    }
+    
+    func scan(until condition: (Element) -> Bool) throws -> (rest: Substring, prefix: Substring) {
+        let p = prefix(while: { !condition($0) })
+        return (dropFirst(p.count), p)
+    }
+
+    func parse<T>(_ parser: (Substring) -> T?) throws -> T {
+        guard let t = parser(self) else { throw ScanError.parseFailed }
+        return t
+    }
+}

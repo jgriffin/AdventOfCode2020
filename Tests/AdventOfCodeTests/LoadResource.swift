@@ -18,7 +18,6 @@ extension XCTestCase {
     }
 }
 
-
 extension URL {
     func readContents() -> String? {
         try? String(contentsOf: self, encoding: .utf8)
