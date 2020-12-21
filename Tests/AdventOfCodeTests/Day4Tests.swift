@@ -194,7 +194,7 @@ private extension Day4Tests {
     static let passportField = zip(
         P.letters.asString.compactMap { FieldName(rawValue: $0) },
         P.character(":"),
-        P.oneOf(.character("#"), .alphanum)
+        oneOf(.character("#"), .alphanum)
             .oneOrMore()
             .asString
     )
@@ -202,7 +202,7 @@ private extension Day4Tests {
                                             value: value) }
 
     static let passportFields = passportField
-        .oneOrMore(separatedBy: .oneOf(.space, .newline))
+        .oneOrMore(separatedBy: oneOf(.space, .newline))
 
     static let passport = passportFields
         .map { fields in Passport(fields: fields) }
@@ -242,14 +242,14 @@ private extension Day4Tests {
         return height >= 59 && height <= 76
     }
 
-    static let height = P.oneOf(heightCM, heightIN)
+    static let height = oneOf(heightCM, heightIN)
         .map { $0 + $1 }
 
     static let hairColor = zip("#",
                                P.character(in: "0123456789abcdef").takeCount(6))
         .map { $0 + $1 }
 
-    static let eyeColor = P.oneOf("amb", "blu", "brn", "gry", "grn", "hzl", "oth")
+    static let eyeColor = oneOf("amb", "blu", "brn", "gry", "grn", "hzl", "oth")
 
     static func isValueValid2(_ value: String,
                               for fieldName: FieldName) -> Bool

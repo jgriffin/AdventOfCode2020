@@ -15,4 +15,10 @@ public extension Collection {
         }
         return first
     }
+
+    var asArray: [Element] { Array(self) }
+}
+
+public extension Collection where Element: Hashable {
+    var asSet: Set<Element> { Set(self) }
 }
