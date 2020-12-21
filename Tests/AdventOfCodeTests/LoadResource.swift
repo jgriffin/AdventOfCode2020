@@ -22,6 +22,10 @@ extension URL {
     func readContents() -> String? {
         try? String(contentsOf: self, encoding: .utf8)
     }
+
+    func readLines() -> [Substring]? {
+        readContents()?.split(separator: "\n")
+    }
 }
 
 extension String {
