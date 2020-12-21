@@ -10,37 +10,57 @@ import ParserCombinator
 import XCTest
 
 final class Day2Tests: XCTestCase {
-    typealias P = Parsers
+    typealias P = Parser
 
     let input = resourceURL(filename: "Day2Input.txt")
         .flatMap(stringFromURL)
 
-    let lineParser = curry(PWDLine.init) <^>
-        P.integer <*>
-        (P.character("-") *> P.integer) <*>
-        (P.character(" ") *> P.letter <* P.string(": ")) <*>
-        P.word
+    static let lineParser = zip(
+        P.integer,
+        P.character("-"),
+        P.integer,
+        P.space,
+        P.letter,
+        P.literal(": "),
+        P.letters
+    )
+    .map { min, _, max, _, ch, _, pwd in
+        PWDLine(min: min, max: max, ch: ch, pwd: String(pwd))
+    }
+
+    static let linesParser = lineParser.zeroOrMore(separatedBy: P.newline)
+
+    func testParseLine() {
+        let tests: [(line: String, check: PWDLine)] = [
+            ("1-4 m: mrfmmbjxr", .init(min: 1, max: 4, ch: "m", pwd: "mrfmmbjxr")),
+            ("5-16 b: bbbbhbbbbpbxbbbcb", .init(min: 5, max: 16, ch: "b", pwd: "bbbbhbbbbpbxbbbcb")),
+        ]
+
+        tests.forEach { test in
+            do {
+                let result = Self.lineParser.run(test.line).match
+                XCTAssertEqual(result, test.check, test.line)
+            }
+        }
+    }
 
     func testReadLines() {
-        let lines = input!.lines()
-        let parsed = lines.map { lineParser.run($0)! }
+        let parsed = Self.linesParser.run(input!).match
 
-        print(parsed.map { "\($0)" }.joined(separator: "\n"))
+        XCTAssertEqual(parsed?.count, 1000)
     }
 
     func testValidPasswords() {
-        let lines = input!.lines()
-        let parsed = lines.map { lineParser.run($0)! }
+        let parsed = Self.linesParser.run(input!).match
 
-        let valid = parsed.filter(\.isValid)
+        let valid = parsed!.filter(\.isValid)
         XCTAssertEqual(valid.count, 607)
     }
 
     func testValid2Passwords() {
-        let lines = input!.lines()
-        let parsed = lines.map { lineParser.run($0)! }
+        let parsed = Self.linesParser.run(input!).match
 
-        let valid = parsed.filter(\.isValid2)
+        let valid = parsed!.filter(\.isValid2)
         XCTAssertEqual(valid.count, 321)
     }
 
@@ -82,20 +102,6 @@ final class Day2Tests: XCTestCase {
             let maxIsCh = pwd[pwd.index(pwd.startIndex, offsetBy: max - 1)] == ch
 
             return (minIsCh || maxIsCh) && !(minIsCh && maxIsCh)
-        }
-    }
-
-    func testParseLine() {
-        let tests: [(line: String, check: PWDLine)] = [
-            ("1-4 m: mrfmmbjxr", .init(min: 1, max: 4, ch: "m", pwd: "mrfmmbjxr")),
-            ("5-16 b: bbbbhbbbbpbxbbbcb", .init(min: 5, max: 16, ch: "b", pwd: "bbbbhbbbbpbxbbbcb")),
-        ]
-
-        tests.forEach { test in
-            do {
-                let result = lineParser.run(test.line)
-                XCTAssertEqual(result, test.check, test.line)
-            }
         }
     }
 }

@@ -13,7 +13,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-algorithms.git", from: "0.0.2"),
-        .package(url: "https://github.com/jgriffin/ParserCombinator.git", from: "0.0.1"),
+        .package(url: "https://github.com/jgriffin/ParserCombinator.git", from: "0.0.2"),
     ],
     targets: [
         .target(
