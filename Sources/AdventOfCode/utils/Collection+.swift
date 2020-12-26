@@ -17,6 +17,21 @@ public extension Collection {
     }
 
     var asArray: [Element] { Array(self) }
+
+    func reduceFirst<Result>(
+        _ firstMap: (Element) -> Result,
+        _ nextPartialResult: (Result, Element) throws -> Result
+    ) rethrows -> Result {
+        guard let first = first else { fatalError() }
+        return try dropFirst().reduce(firstMap(first), nextPartialResult)
+    }
+
+    func reduceFirst<Result>(
+        _ nextPartialResult: (Result, Element) throws -> Result) rethrows -> Result where Element == Result
+    {
+        guard let first = first else { fatalError() }
+        return try dropFirst().reduce(first, nextPartialResult)
+    }
 }
 
 public extension Collection where Element: Hashable {
