@@ -5,6 +5,7 @@
 //  Created by Griff on 12/21/20.
 //
 
+import AdventOfCode
 import ParserCombinator
 import XCTest
 
@@ -37,8 +38,8 @@ extension Day17Tests {
         conway.setFromCubeSlice(cubeSlice)
 
         let box = conway.boxOfInterest()!
-        XCTAssertEqual(box.min, .init(x: -1, y: -1, z: -1))
-        XCTAssertEqual(box.max, .init(x: 3, y: 3, z: 1))
+        XCTAssertEqual(box.min, .init(-1, -1, -1))
+        XCTAssertEqual(box.max, .init(3, 3, 1))
 
         let indices = Index3D.indicesBetween(box.min, box.max)
         XCTAssertEqual(indices.count, 5 * 5 * 3)
@@ -155,7 +156,7 @@ extension Day17Tests {
             for x in 0 ..< cubeSlice.first!.count {
                 for y in 0 ..< cubeSlice.count {
                     if cubeSlice[y][x] == "#" {
-                        setActive(.init(x: x, y: y, z: 0))
+                        setActive(.init(x, y, 0))
                     }
                 }
             }
@@ -165,114 +166,11 @@ extension Day17Tests {
             for x in 0 ..< cubeSlice.first!.count {
                 for y in 0 ..< cubeSlice.count {
                     if cubeSlice[y][x] == "#" {
-                        setActive(.init(x: x, y: y, z: 0, zz: 0))
+                        setActive(.init(x, y, 0, 0))
                     }
                 }
             }
         }
-    }
-}
-
-protocol Indexing: Hashable {
-    static func indicesBetween(_: Self, _: Self) -> [Self]
-
-    static var zero: Self { get }
-    static var unitPlus: Self { get }
-    static var unitMinus: Self { get }
-
-    static var neighborOffsets: [Self] { get }
-
-    static func + (_: Self, _: Self) -> Self
-    static func min(_: Self, _: Self) -> Self
-    static func max(_: Self, _: Self) -> Self
-}
-
-extension Indexing {}
-
-struct Index3D: Indexing, CustomStringConvertible {
-    var x, y, z: Int
-    var description: String { "\(x),\(y),\(z)" }
-
-    static let zero = Self(x: 0, y: 0, z: 0)
-    static let unitPlus = Self(x: 1, y: 1, z: 1)
-    static let unitMinus = Self(x: -1, y: -1, z: -1)
-
-    static let neighborOffsets: [Self] = {
-        indicesBetween(.unitMinus, .unitPlus)
-            .filter { $0 != .zero }
-    }()
-
-    static func indicesBetween(_ i1: Self,
-                               _ i2: Self) -> [Self]
-    {
-        (i1.z ... i2.z).flatMap { z in
-            (i1.y ... i2.y).flatMap { y in
-                (i1.x ... i2.x).map { x in
-                    Self(x: x, y: y, z: z)
-                }
-            }
-        }
-    }
-
-    static func + (_ lhs: Self, _ rhs: Self) -> Self {
-        .init(x: lhs.x + rhs.x, y: lhs.y + rhs.y, z: lhs.z + rhs.z)
-    }
-
-    static func min(_ lhs: Self, _ rhs: Self) -> Self {
-        .init(x: Swift.min(lhs.x, rhs.x), y: Swift.min(lhs.y, rhs.y), z: Swift.min(lhs.z, rhs.z))
-    }
-
-    static func max(_ lhs: Self, _ rhs: Self) -> Self {
-        .init(x: Swift.max(lhs.x, rhs.x), y: Swift.max(lhs.y, rhs.y), z: Swift.max(lhs.z, rhs.z))
-    }
-}
-
-struct Index4D: Indexing, CustomStringConvertible {
-    var x, y, z, zz: Int
-    var description: String { "\(x),\(y),\(z),\(zz)" }
-
-    static let zero = Self(x: 0, y: 0, z: 0, zz: 0)
-    static let unitPlus = Self(x: 1, y: 1, z: 1, zz: 1)
-    static let unitMinus = Self(x: -1, y: -1, z: -1, zz: -1)
-
-    static let neighborOffsets: [Self] = {
-        indicesBetween(.unitMinus, .unitPlus)
-            .filter { $0 != .zero }
-    }()
-
-    static func indicesBetween(_ i1: Self,
-                               _ i2: Self) -> [Self]
-    {
-        (i1.zz ... i2.zz).flatMap { zz in
-            (i1.z ... i2.z).flatMap { z in
-                (i1.y ... i2.y).flatMap { y in
-                    (i1.x ... i2.x).map { x in
-                        Self(x: x, y: y, z: z, zz: zz)
-                    }
-                }
-            }
-        }
-    }
-
-    static func + (_ lhs: Self, _ rhs: Self) -> Self {
-        .init(x: lhs.x + rhs.x,
-              y: lhs.y + rhs.y,
-              z: lhs.z + rhs.z,
-              zz: lhs.zz + rhs.zz)
-    }
-
-    static func min(_ lhs: Self, _ rhs: Self) -> Self {
-        .init(x: Swift.min(lhs.x, rhs.x),
-              y: Swift.min(lhs.y, rhs.y),
-              z: Swift.min(lhs.z, rhs.z),
-              zz: Swift.min(lhs.zz, rhs.zz))
-    }
-
-    static func max(_ lhs: Self, _ rhs: Self) -> Self {
-        .init(x: Swift.max(lhs.x, rhs.x),
-              y: Swift.max(lhs.y, rhs.y),
-              z: Swift.max(lhs.z, rhs.z),
-              zz: Swift.max(lhs.zz, rhs.zz))
     }
 }
 
