@@ -20,6 +20,7 @@ public protocol Indexing: Hashable {
     static var neighborOffsets: [Self] { get }
 
     static func + (_: Self, _: Self) -> Self
+    static func - (_: Self, _: Self) -> Self
     static func min(_: Self, _: Self) -> Self
     static func max(_: Self, _: Self) -> Self
 }
@@ -38,6 +39,7 @@ public extension Indexing {
     }
 
     static func + (_ lhs: Self, _ rhs: Self) -> Self { mapComponents(lhs, rhs, +) }
+    static func - (_ lhs: Self, _ rhs: Self) -> Self { mapComponents(lhs, rhs, -) }
     static func min(_ lhs: Self, _ rhs: Self) -> Self { mapComponents(lhs, rhs, Swift.min) }
     static func max(_ lhs: Self, _ rhs: Self) -> Self { mapComponents(lhs, rhs, Swift.max) }
     static func makeZero() -> Self { fromComponents(Array(repeating: 0, count: componentCount)) }
