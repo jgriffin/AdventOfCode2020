@@ -8,12 +8,15 @@
 import Foundation
 
 public protocol Indexing: Hashable {
-    static func indicesBetween(_: Self, _: Self) -> [Self]
+    var components: [Int] { get }
+    static var componentCount: Int { get }
+    static func fromComponents(_ components: [Int]) -> Self
+
+    static func indicesInRange(_: IndexingRange<Self>) -> [Self]
 
     static var zero: Self { get }
     static var unitPlus: Self { get }
     static var unitMinus: Self { get }
-
     static var neighborOffsets: [Self] { get }
 
     static func + (_: Self, _: Self) -> Self
@@ -22,143 +25,34 @@ public protocol Indexing: Hashable {
 }
 
 public extension Indexing {
-    static func calculateNeighborOffsets() -> [Self] {
-        indicesBetween(.unitMinus, .unitPlus)
-            .filter { $0 != .zero }
+    var description: String {
+        components.map(String.init).joined(separator: ",")
     }
+
+    static func mapComponents(_ lhs: Self, _ rhs: Self,
+                              _ mapping: (Int, Int) -> Int) -> Self
+    {
+        let mapped = zip(lhs.components, rhs.components)
+            .map(mapping)
+        return Self.fromComponents(mapped)
+    }
+
+    static func + (_ lhs: Self, _ rhs: Self) -> Self { mapComponents(lhs, rhs, +) }
+    static func min(_ lhs: Self, _ rhs: Self) -> Self { mapComponents(lhs, rhs, Swift.min) }
+    static func max(_ lhs: Self, _ rhs: Self) -> Self { mapComponents(lhs, rhs, Swift.max) }
+    static func makeZero() -> Self { fromComponents(Array(repeating: 0, count: componentCount)) }
+    static func makeUnitPlus() -> Self { fromComponents(Array(repeating: 1, count: componentCount)) }
+    static func makeUnitMinus() -> Self { fromComponents(Array(repeating: -1, count: componentCount)) }
 }
 
-public struct Index2D: Indexing, CustomStringConvertible {
-    public var x, y: Int
+public extension Indexing {
+    static func makeNeighborOffsets() -> [Self] {
+        let zero = Self.makeZero()
+        let unitPlus = Self.makeUnitPlus()
+        let unitMinus = Self.makeUnitMinus()
 
-    public init(_ x: Int, _ y: Int) {
-        self.x = x
-        self.y = y
-    }
-
-    public var description: String { "\(x),\(y)" }
-
-    public static let zero = Self(0, 0)
-    public static let unitPlus = Self(1, 1)
-    public static let unitMinus = Self(-1, -1)
-
-    public static let neighborOffsets = Self.calculateNeighborOffsets()
-
-    public static func indicesBetween(_ i1: Self,
-                                      _ i2: Self) -> [Self]
-    {
-        (i1.y ... i2.y).flatMap { y in
-            (i1.x ... i2.x).map { x in
-                Self(x, y)
-            }
-        }
-    }
-
-    public static func + (_ lhs: Self, _ rhs: Self) -> Self {
-        .init(lhs.x + rhs.x, lhs.y + rhs.y)
-    }
-
-    public static func min(_ lhs: Self, _ rhs: Self) -> Self {
-        .init(Swift.min(lhs.x, rhs.x), Swift.min(lhs.y, rhs.y))
-    }
-
-    public static func max(_ lhs: Self, _ rhs: Self) -> Self {
-        .init(Swift.max(lhs.x, rhs.x), Swift.max(lhs.y, rhs.y))
-    }
-}
-
-public struct Index3D: Indexing, CustomStringConvertible {
-    public var x, y, z: Int
-
-    public init(_ x: Int, _ y: Int, _ z: Int) {
-        self.x = x
-        self.y = y
-        self.z = z
-    }
-
-    public var description: String { "\(x),\(y),\(z)" }
-
-    public static let zero = Self(0, 0, 0)
-    public static let unitPlus = Self(1, 1, 1)
-    public static let unitMinus = Self(-1, -1, -1)
-
-    public static let neighborOffsets = Self.calculateNeighborOffsets()
-
-    public static func indicesBetween(_ i1: Self,
-                                      _ i2: Self) -> [Self]
-    {
-        (i1.z ... i2.z).flatMap { z in
-            (i1.y ... i2.y).flatMap { y in
-                (i1.x ... i2.x).map { x in
-                    Self(x, y, z)
-                }
-            }
-        }
-    }
-
-    public static func + (_ lhs: Self, _ rhs: Self) -> Self {
-        .init(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z)
-    }
-
-    public static func min(_ lhs: Self, _ rhs: Self) -> Self {
-        .init(Swift.min(lhs.x, rhs.x), Swift.min(lhs.y, rhs.y), Swift.min(lhs.z, rhs.z))
-    }
-
-    public static func max(_ lhs: Self, _ rhs: Self) -> Self {
-        .init(Swift.max(lhs.x, rhs.x), Swift.max(lhs.y, rhs.y), Swift.max(lhs.z, rhs.z))
-    }
-}
-
-public struct Index4D: Indexing, CustomStringConvertible {
-    public var x, y, z, zz: Int
-
-    public init(_ x: Int, _ y: Int, _ z: Int, _ zz: Int) {
-        self.x = x
-        self.y = y
-        self.z = z
-        self.zz = zz
-    }
-
-    public var description: String { "\(x),\(y),\(z),\(zz)" }
-
-    public static let zero = Self(0, 0, 0, 0)
-    public static let unitPlus = Self(1, 1, 1, 1)
-    public static let unitMinus = Self(-1, -1, -1, -1)
-
-    public static let neighborOffsets = Self.calculateNeighborOffsets()
-
-    public static func indicesBetween(_ i1: Self,
-                                      _ i2: Self) -> [Self]
-    {
-        (i1.zz ... i2.zz).flatMap { zz in
-            (i1.z ... i2.z).flatMap { z in
-                (i1.y ... i2.y).flatMap { y in
-                    (i1.x ... i2.x).map { x in
-                        Self(x, y, z, zz)
-                    }
-                }
-            }
-        }
-    }
-
-    public static func + (_ lhs: Self, _ rhs: Self) -> Self {
-        .init(lhs.x + rhs.x,
-              lhs.y + rhs.y,
-              lhs.z + rhs.z,
-              lhs.zz + rhs.zz)
-    }
-
-    public static func min(_ lhs: Self, _ rhs: Self) -> Self {
-        .init(Swift.min(lhs.x, rhs.x),
-              Swift.min(lhs.y, rhs.y),
-              Swift.min(lhs.z, rhs.z),
-              Swift.min(lhs.zz, rhs.zz))
-    }
-
-    public static func max(_ lhs: Self, _ rhs: Self) -> Self {
-        .init(Swift.max(lhs.x, rhs.x),
-              Swift.max(lhs.y, rhs.y),
-              Swift.max(lhs.z, rhs.z),
-              Swift.max(lhs.zz, rhs.zz))
+        let range = IndexingRange(min: unitMinus, max: unitPlus)
+        return indicesInRange(range)
+            .filter { $0 != zero }
     }
 }

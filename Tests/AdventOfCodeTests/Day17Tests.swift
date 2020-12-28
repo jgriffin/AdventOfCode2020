@@ -41,7 +41,7 @@ extension Day17Tests {
         XCTAssertEqual(box.min, .init(-1, -1, -1))
         XCTAssertEqual(box.max, .init(3, 3, 1))
 
-        let indices = Index3D.indicesBetween(box.min, box.max)
+        let indices = Index3D.indicesInRange(box)
         XCTAssertEqual(indices.count, 5 * 5 * 3)
     }
 
@@ -114,7 +114,7 @@ extension Day17Tests {
             var nextConway = Conway()
             let box = boxOfInterest()!
 
-            Index.indicesBetween(box.min, box.max)
+            Index.indicesInRange(box)
                 .filter(willBeActive)
                 .forEach { index in
                     nextConway.setActive(index)
@@ -143,13 +143,13 @@ extension Day17Tests {
                 .count
         }
 
-        func boxOfInterest() -> (min: Index, max: Index)? {
+        func boxOfInterest() -> IndexingRange<Index>? {
             guard let first = activeCubes.first else { return nil }
 
             // one extra on all sides
             let minIndex = activeCubes.reduce(first, Index.min) + Index.unitMinus
             let maxIndex = activeCubes.reduce(first, Index.max) + Index.unitPlus
-            return (minIndex, maxIndex)
+            return .init(min: minIndex, max: maxIndex)
         }
 
         mutating func setFromCubeSlice(_ cubeSlice: [[Character]]) where Index == Index3D {
