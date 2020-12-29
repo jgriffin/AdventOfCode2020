@@ -63,7 +63,7 @@ extension Day22Tests {
         var player2: Player
 
         enum Winner { case player1, player2 }
-        
+
         mutating func playUntilWinner() -> Winner {
             while true {
                 if let winner = playRound() {
