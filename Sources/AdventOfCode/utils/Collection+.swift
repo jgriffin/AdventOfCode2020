@@ -16,8 +16,6 @@ public extension Collection {
         return first
     }
 
-    var asArray: [Element] { Array(self) }
-
     func reduceFirst<Result>(
         _ firstMap: (Element) -> Result,
         _ nextPartialResult: (Result, Element) throws -> Result
@@ -32,6 +30,10 @@ public extension Collection {
         guard let first = first else { fatalError() }
         return try dropFirst().reduce(first, nextPartialResult)
     }
+}
+
+public extension Sequence {
+    var asArray: [Element] { Array(self) }
 }
 
 public extension Collection where Element: Hashable {

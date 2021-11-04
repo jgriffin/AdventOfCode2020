@@ -125,8 +125,8 @@ final class Day4Tests: XCTestCase {
             .match(invalid2Examples)
         XCTAssertEqual(passports?.count, 4)
 
-        let validPassports = passports!.filter(\.isValid2)
-        XCTAssertEqual(validPassports.count, 0)
+        let validPassports = passports?.filter(\.isValid2)
+        XCTAssertEqual(validPassports?.count, 0)
     }
 
     func testIsValid2FieldExample() {
@@ -207,7 +207,9 @@ private extension Day4Tests {
     static let passport = passportFields
         .map { fields in Passport(fields: fields) }
 
-    static let passports = passport.oneOrMore(separatedBy: .newline)
+    static let passports = passport
+        .oneOrMore(separatedBy: .newlines)
+        .ignoring(P.newline.zeroOrMore())
 }
 
 private extension Day4Tests {

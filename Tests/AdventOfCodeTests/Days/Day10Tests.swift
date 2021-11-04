@@ -61,6 +61,39 @@ final class Day10Tests: XCTestCase {
     3
     """
 
+    func testArrangementsExample() {
+        guard let chargers = Self.chargers.match(example)?.sorted().reversed().asArray else {
+            fatalError()
+        }
+
+        let po = Self.pathsOutWith(chargers: chargers)
+        XCTAssertEqual(po[0], 19208)
+    }
+
+    func testArrangementsInput() {
+        guard let chargers = Self.chargers.match(input)?.sorted().reversed().asArray else {
+            fatalError()
+        }
+
+        let po = Self.pathsOutWith(chargers: chargers)
+        XCTAssertEqual(po[0], 48_358_655_787_008)
+    }
+
+    static func pathsOutWith(chargers: [Int]) -> [Int: Int] {
+        let voltages = chargers.sorted().reversed() + [0]
+        let deviceVoltage = voltages.first! + 3
+
+        let pathsOut = voltages
+            .reduce(into: [deviceVoltage: 1]) {
+                (result: inout [Int: Int], charger: Int) in
+                result[charger] =
+                    (result[charger + 1] ?? 0) +
+                    (result[charger + 2] ?? 0) +
+                    (result[charger + 3] ?? 0)
+            }
+        return pathsOut
+    }
+
     func testParseSimple() {
         let chargers = Self.chargers.match(simpleExample)
         XCTAssertEqual(chargers?.count, 11)
@@ -91,7 +124,7 @@ final class Day10Tests: XCTestCase {
         let deltas = zip(sorted, sorted.dropFirst()).map { $0.1 - $0.0 }
         let counts = Dictionary(grouping: deltas) { e in e }
             .map { k, v in (jolts: k, count: v.count) }
-            .sorted { (lhs, rhs) -> Bool in lhs.jolts < rhs.jolts }
+            .sorted { lhs, rhs -> Bool in lhs.jolts < rhs.jolts }
         print(counts)
     }
 
@@ -101,7 +134,7 @@ final class Day10Tests: XCTestCase {
         let deltas = zip(sorted, sorted.dropFirst()).map { $0.1 - $0.0 }
         let counts = Dictionary(grouping: deltas) { e in e }
             .map { k, v in (jolts: k, count: v.count) }
-            .sorted { (lhs, rhs) -> Bool in lhs.jolts < rhs.jolts }
+            .sorted { lhs, rhs -> Bool in lhs.jolts < rhs.jolts }
         XCTAssertEqual(counts.map(\.jolts), [1, 3])
         XCTAssertEqual(counts.map(\.count), [70, 34])
         XCTAssertEqual(counts.map(\.count).reduce(1,*), 2380)

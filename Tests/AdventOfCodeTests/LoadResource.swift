@@ -1,10 +1,3 @@
-//
-//  File.swift
-//
-//
-//  Created by John on 12/13/20.
-//
-
 import Foundation
 import XCTest
 

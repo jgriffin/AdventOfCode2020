@@ -43,7 +43,6 @@ final class Day9Tests: XCTestCase {
     func testParseInput() {
         let numbers = Self.numbers.match(input)!
         XCTAssertEqual(numbers.count, 1000)
-        XCTAssertEqual(numbers.asSet.count, numbers.count)
     }
 
     func testPair2Sum() {

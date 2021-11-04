@@ -2,12 +2,30 @@
   "object": {
     "pins": [
       {
+        "package": "BigInt",
+        "repositoryURL": "https://github.com/attaswift/BigInt.git",
+        "state": {
+          "branch": null,
+          "revision": "889a1ecacd73ccc189c5cb29288048f186c44ed9",
+          "version": "5.2.1"
+        }
+      },
+      {
+        "package": "EulerTools",
+        "repositoryURL": "https://github.com/jgriffin/EulerTools.git",
+        "state": {
+          "branch": null,
+          "revision": "af8482d071d91a955f474d9dd4f01d9b377321cf",
+          "version": "0.1.0"
+        }
+      },
+      {
         "package": "ParserCombinator",
         "repositoryURL": "https://github.com/jgriffin/ParserCombinator.git",
         "state": {
           "branch": null,
-          "revision": "7801a28b0c65e77268e34e194c540f9a56c5e413",
-          "version": "0.0.2"
+          "revision": "833184b43a63f953d5c099fae905ec6b3b13950c",
+          "version": "0.0.4"
         }
       },
       {

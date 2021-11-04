@@ -35,7 +35,7 @@ final class Day6Tests: XCTestCase {
 
     static let form = P.letter.oneOrMore()
     static let group = form.oneOrMore(separatedBy: "\n")
-    static let groups = group.oneOrMore(separatedBy: "\n")
+    static let groups = group.oneOrMore(separatedBy: .newlines)
 
     func testExample() {
         let groups = Self.groups.match(example)!
